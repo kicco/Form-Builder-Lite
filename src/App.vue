@@ -1,28 +1,58 @@
-<template>
-  <div id="app">
-    <img alt="Vue logo" src="./assets/logo.png">
-    <HelloWorld msg="Welcome to Your Vue.js App"/>
-  </div>
+<template lang="pug">
+#app.container
+	h1.title.is-3 Form Builder Lite
+	.columns
+		.column.is-6
+			button.button(@click="getCollection") <span v-if="!collection.length">Load &nbsp;</span> Collection
+
+	//- There would be an actual router here
+
+	//- Collection
+	.columns(v-if="mode === 'COLLECTION'")
+		.column.is-6
+			Collection(:collection="collection", :schema="schema.filter(f => f.list)")
+
+	//- Single Element
+	.columns(v-if="mode === 'SINGLE'")
+		.column.is-6
+			FormBuilder(:model="model", :schema="schema.filter(f => f.edit)", @input="set")
+
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld.vue'
+import Collection from '@/components/Collection/Collection'
+import FormBuilder from '@/components/FormBuilder/FormBuilder'
 
 export default {
-  name: 'app',
-  components: {
-    HelloWorld
-  }
+	name: 'app',
+	components: { Collection, FormBuilder },
+	data:() => ({}),
+	methods: {
+		getCollection () {
+			this.$store.dispatch('COLLECTION')
+		},
+		set (data) {
+			this.$store.dispatch('SET', data)
+		}
+	},
+	computed: {
+		model: function() {
+			return this.$store.getters.model
+		},
+		collection: function() {
+			return this.$store.getters.collection
+		},
+		schema: function() {
+			return this.$store.getters.schema
+		},
+		mode: function() {
+			return this.$store.getters.mode
+		}
+	}
 }
 </script>
 
-<style>
-#app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
-  margin-top: 60px;
-}
+<style lang="sass">
+@import 'bulma'
 </style>
+
